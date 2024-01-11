@@ -1,4 +1,7 @@
 import pandas as pd
+import numpy as np
+import networkx as nx
+from networkx.algorithms import community
 
 
 def create_sentences(segments, MIN_WORDS, MAX_WORDS):
