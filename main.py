@@ -51,7 +51,7 @@ def summarize_stage_1(chunks_text):
   print(f'Start time: {datetime.now()}')
 
   # Prompt to get title and summary for each chunk
-  map_prompt_template = """Firstly, give the following text an informative title. Then, on a new line, write a 75-100 word summary of the following text:
+  map_prompt_template = """Firstly, give the following text an informative title. Then, write a 75-100 word summary of the following text:
   {text}
 
   Return your answer in the following format:
@@ -66,11 +66,6 @@ def summarize_stage_1(chunks_text):
   # Define the LLMs
   map_llm = OpenAI(temperature=0, model_name = 'gpt-3.5-turbo-1106')
   map_llm_chain = LLMChain(llm = map_llm, prompt = map_prompt)
-  # for t in chunks_text:
-  #   r = map_llm_chain.apply([{'text': t}])
-  #   print(r)
-  #   print(type(r))
-  #   exit(0)
   map_llm_chain_input = [{'text': t} for t in chunks_text]
   # Run the input through the LLM chain (works in parallel)
   map_llm_chain_results = map_llm_chain.apply(map_llm_chain_input)
