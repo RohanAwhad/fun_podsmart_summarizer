@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import networkx as nx
 from networkx.algorithms import community
+from typing import List, Dict
+import re
 
 
 def create_sentences(segments, MIN_WORDS, MAX_WORDS):
@@ -67,6 +69,19 @@ def parse_title_summary_results(results):
     elif ':' in e: processed = {'title': e.split(':')[0], 'summary': e.split(':')[1][1:]}
     elif '-' in e: processed = {'title': e.split('-')[0], 'summary': e.split('-')[1][1:]}
     else: processed = {'title': '', 'summary': e}
+
+    # process title
+    title = processed['title'].strip()
+    title = re.sub(r'^(title)[:|-]?', '', title, flags=re.IGNORECASE)
+    title = title.strip()
+
+    # process summary
+    summary = processed['summary'].strip()
+    summary = re.sub(r'^(summary)[:|-]?', '', summary, flags=re.IGNORECASE)
+    summary = summary.strip()
+
+    processed['title'] = title
+    processed['summary'] = summary
 
     out.append(processed)
   return out
@@ -137,3 +152,12 @@ def get_topics(title_similarity, num_topics = 8, bonus_constant = 0.25, min_size
     'chunk_topics': chunk_topics,
     'topics': topics_title
     }
+
+def json_to_md(data: List[Dict[str, str]]) -> str:
+    # create markdown with title as h3 and text as p
+  ret = ''
+  for d in data:
+    ret += f'### {d["title"]}\n'
+    ret += f'{d["summary"]}\n\n'
+
+  return ret
