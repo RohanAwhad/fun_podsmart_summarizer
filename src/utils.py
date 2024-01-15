@@ -62,28 +62,17 @@ def create_chunks(sentences, CHUNK_LENGTH, STRIDE):
 
 def parse_title_summary_results(results):
   out = []
-  for e in results:
-    e = e.replace('\n', '')
+  for text in results:
+    title_pattern = r"Title: (.*)\n"
+    summary_pattern = r"Summary:\n((?:- .*\n)*)"
 
-    if '|' in e: processed = {'title': e.split('|')[0], 'summary': e.split('|')[1][1:]}
-    elif ':' in e: processed = {'title': e.split(':')[0], 'summary': e.split(':')[1][1:]}
-    elif '-' in e: processed = {'title': e.split('-')[0], 'summary': e.split('-')[1][1:]}
-    else: processed = {'title': '', 'summary': e}
-
-    # process title
-    title = processed['title'].strip()
-    title = re.sub(r'^(title)[:|-]?', '', title, flags=re.IGNORECASE)
-    title = title.strip()
-
-    # process summary
-    summary = processed['summary'].strip()
-    summary = re.sub(r'^(summary)[:|-]?', '', summary, flags=re.IGNORECASE)
-    summary = summary.strip()
-
-    processed['title'] = title
-    processed['summary'] = summary
-
-    out.append(processed)
+    title = re.search(title_pattern, text).group(1)
+    summary = re.findall(summary_pattern, text)[0].split('\n')
+    summary = [item.strip('- ') for item in summary if item]
+    out.append({
+      'title': title,
+      'summary': ' '.join(summary)
+    })
   return out
 
 def get_topics(title_similarity, num_topics = 8, bonus_constant = 0.25, min_size = 3):
