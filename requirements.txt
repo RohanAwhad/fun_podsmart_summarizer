@@ -3,7 +3,8 @@ uvicorn
 gunicorn
 openai
 langchain
-langchain_community
+langchain-community
+langchain-together
 numpy
 networkx
 pandas
