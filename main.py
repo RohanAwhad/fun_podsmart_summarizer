@@ -16,10 +16,6 @@ from src.summarizer import summarize_stage_1, summarize_stage_2
 
 VERSION = '1.4.1'
 
-import nltk
-try: nltk.data.find('punkt')
-except LookupError: nltk.download('punkt')
-
 logfile = f'logs/main_v{VERSION}.log'
 logger.add(logfile, colorize=True, enqueue=True)
 handler = FileCallbackHandler(logfile)
