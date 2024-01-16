@@ -1,10 +1,10 @@
 import aiohttp
 import asyncio
-import torch
 
 from loguru import logger
 from tqdm import tqdm
 from typing import Union, List
+import numpy as np
 
 
 url = "https://fun-sentence-embedder-c8f3c4818216.herokuapp.com"
@@ -32,7 +32,8 @@ class _Encoder:
     self._todo = asyncio.Queue()
     self.responses = []
 
-  async def _encode_batch(self) -> torch.Tensor:
+  async def _encode_batch(self) -> np.ndarray:
+    embeddings = []
     for i in range(0, len(self.text_list), self.batch_size):
       text_batch = self.text_list[i : i + self.batch_size]
       await self._todo.put((text_batch))
@@ -40,7 +41,9 @@ class _Encoder:
     workers = [asyncio.create_task(self.worker()) for _ in range(self.num_workers)]
     await self._todo.join()
     for w in workers: w.cancel()
-    return torch.cat([torch.tensor(res['embeddings']) for res in self.responses], dim=0)
+    
+    for res in self.responses: embeddings.append(np.array(res['embeddings']))
+    return np.concatenate(embeddings, axis=0)
 
   async def worker(self):
     while True:
@@ -59,12 +62,12 @@ class _Encoder:
       self._todo.task_done()
         
 
-async def _encode(text: Union[str, list[str]], batch_size: int=8) -> torch.Tensor:
+async def _encode(text: Union[str, list[str]], batch_size: int=8) -> np.ndarray:
   async with aiohttp.ClientSession() as session:
     _encoder = _Encoder(url, session, text, batch_size=batch_size, num_workers=8)
     return await _encoder._encode_batch()
 
-def encode(text: Union[str, list[str]]) -> torch.Tensor:
+def encode(text: Union[str, list[str]]) -> np.ndarray:
   if isinstance(text, str): text = [text]
   return asyncio.run(_encode(text, batch_size=8))
 

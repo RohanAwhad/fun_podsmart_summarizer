@@ -14,7 +14,7 @@ from src import utils
 from src.encoder_service import encode
 from src.summarizer import summarize_stage_1, summarize_stage_2
 
-VERSION = '1.4.1'
+VERSION = '1.4.2'
 
 logfile = f'logs/main_v{VERSION}.log'
 logger.add(logfile, colorize=True, enqueue=True)
@@ -81,8 +81,8 @@ def main(text: str) -> MainOut:
     summary_similarity_matrix = None
   else:
     # summary and title embeddings
-    summary_embeds = encode(stage_1_summaries).numpy()
-    # title_embeds = encode(stage_1_titles).numpy()
+    summary_embeds = encode(stage_1_summaries)
+    # title_embeds = encode(stage_1_titles)
 
     # Get similarity matrix between the embeddings of the chunk summaries
     summary_similarity_matrix = np.zeros((num_1_chunks, num_1_chunks))
