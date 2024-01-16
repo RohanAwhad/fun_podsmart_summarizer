@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+gunicorn
+openai
+langchain
+langchain_community
+numpy
+networkx
+pandas
+nltk
+loguru
