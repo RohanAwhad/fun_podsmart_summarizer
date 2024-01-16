@@ -10,7 +10,7 @@ from loguru import logger
 from nltk.tokenize import sent_tokenize
 from pydantic import BaseModel
 from scipy.spatial.distance import cosine
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from src import utils
 from src.encoder_service import encode
@@ -25,11 +25,11 @@ handler = FileCallbackHandler(logfile)
 
 class MainOut(BaseModel):
   stage_1_outputs: List[Dict[str, str]]
-  stage_2_outputs: List[Dict[str, str]]
-  final_summary: str
+  stage_2_outputs: Optional[List[Dict[str, str]]] = None
+  final_summary: Optional[str] = None
   markdown_summary: str
-  summary_similarity_matrix: np.ndarray
-  chunk_topics: List[int]
+  summary_similarity_matrix: Optional[np.ndarray] = None
+  chunk_topics: Optional[List[int]] = None
 
   class Config:
     arbitrary_types_allowed = True
@@ -74,29 +74,35 @@ def main(text: str) -> MainOut:
   stage_1_titles = [e['title'] for e in stage_1_outputs]
   num_1_chunks = len(stage_1_summaries)
 
-  # summary and title embeddings
-  summary_embeds = encode(stage_1_summaries).numpy()
-  # title_embeds = encode(stage_1_titles).numpy()
+  # check if num_1_chunks < 8, if so, skip chunking, directly send to stage 2
+  if num_1_chunks < 8:
+    chunk_topics = [0] * num_1_chunks
+    topics = [list(range(num_1_chunks))]
+    summary_similarity_matrix = None
+  else:
+    # summary and title embeddings
+    summary_embeds = encode(stage_1_summaries).numpy()
+    # title_embeds = encode(stage_1_titles).numpy()
 
-  # Get similarity matrix between the embeddings of the chunk summaries
-  summary_similarity_matrix = np.zeros((num_1_chunks, num_1_chunks))
-  summary_similarity_matrix[:] = np.nan
+    # Get similarity matrix between the embeddings of the chunk summaries
+    summary_similarity_matrix = np.zeros((num_1_chunks, num_1_chunks))
+    summary_similarity_matrix[:] = np.nan
 
-  for row in range(num_1_chunks):
-    for col in range(row, num_1_chunks):
-      # Calculate cosine similarity between the two vectors
-      similarity = 1- cosine(summary_embeds[row], summary_embeds[col])
-      summary_similarity_matrix[row, col] = similarity
-      summary_similarity_matrix[col, row] = similarity
+    for row in range(num_1_chunks):
+      for col in range(row, num_1_chunks):
+        # Calculate cosine similarity between the two vectors
+        similarity = 1- cosine(summary_embeds[row], summary_embeds[col])
+        summary_similarity_matrix[row, col] = similarity
+        summary_similarity_matrix[col, row] = similarity
 
 
-  # Run the community detection algorithm
-  # Set num_topics to be 1/4 of the number of chunks, or 8, which ever is smaller
-  #num_topics = min(int(num_1_chunks / 4), 8)
-  num_topics = num_1_chunks // 4
-  topics_out = utils.get_topics(summary_similarity_matrix, num_topics=num_topics, bonus_constant=0.2)
-  chunk_topics = topics_out['chunk_topics']
-  topics = topics_out['topics']
+    # Run the community detection algorithm
+    # Set num_topics to be 1/4 of the number of chunks, or 8, which ever is smaller
+    #num_topics = min(int(num_1_chunks / 4), 8)
+    num_topics = num_1_chunks // 4
+    topics_out = utils.get_topics(summary_similarity_matrix, num_topics=num_topics, bonus_constant=0.2)
+    chunk_topics = topics_out['chunk_topics']
+    topics = topics_out['topics']
 
   # Query GPT-3 to get a summarized title for each topic_data
   out = summarize_stage_2(stage_1_outputs, topics, summary_num_words = 250, handler=handler, verbose=True)
