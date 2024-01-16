@@ -41,6 +41,16 @@ SUMMARY_STAGE_1_MAP_PROMPT = (
 'TITLE AND CONCISE SUMMARY:\n'
 '[/INST]\n'
 )
+SUMMARY_STAGE_2_MAP_PROMPT = (
+  'Write a concise summary for text enclosed in triple backticks (```)\n'
+  '\n'
+  '```\n'
+  '{text}\n'
+  '```\n'
+  '\n'
+  '---\n'
+  'Summary:\n'
+)
 
 SUMMARY_STAGE_1_MAP_LLM = Together(
   temperature=0.4,
@@ -48,8 +58,13 @@ SUMMARY_STAGE_1_MAP_LLM = Together(
   max_tokens=1024,
   top_p=0.6,
 )
+SUMMARY_STAGE_2_MAP_LLM = Together(
+  temperature=0.8,
+  model='mistralai/Mixtral-8x7B-Instruct-v0.1',
+  max_tokens=1024,
+  top_p=0.8,
+)
 SUMMARY_STAGE_2_TITLE_LLM = OpenAI(temperature=0, model_name=model_name)
-SUMMARY_STAGE_2_MAP_LLM = OpenAI(temperature=0, model_name=model_name)
 SUMMARY_STAGE_2_REDUCE_LLM = OpenAI(temperature=0, model_name=model_name, max_tokens = 1024)
 
 
@@ -89,17 +104,12 @@ def summarize_stage_2(stage_1_outputs, topics, summary_num_words = 250, handler=
   TITLES:
   """
 
-  map_prompt_template = """Wite a 75-100 word summary of the following text:
-    {text}
-
-    CONCISE SUMMARY:"""
-
   combine_prompt_template = 'Write a ' + str(summary_num_words) + """-word summary of the following, removing irrelevant information. Finish your answer:
   {text}
   """ + str(summary_num_words) + """-WORD SUMMARY:"""
 
   title_prompt = PromptTemplate(template=title_prompt_template, input_variables=["text"])
-  map_prompt = PromptTemplate(template=map_prompt_template, input_variables=["text"])
+  map_prompt = PromptTemplate(template=SUMMARY_STAGE_2_MAP_PROMPT, input_variables=["text"])
   combine_prompt = PromptTemplate(template=combine_prompt_template, input_variables=["text"])
 
   # === Get Titles ===
