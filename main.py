@@ -17,7 +17,7 @@ from src.encoder_service import encode
 from src.pdf_reader import pdf_to_text
 from src.summarizer import summarize_stage_1, summarize_stage_2
 
-VERSION = 1.2
+VERSION = '1.3.2'
 logfile = f'logs/main_v{VERSION}.log'
 logger.add(logfile, colorize=True, enqueue=True)
 handler = FileCallbackHandler(logfile)
@@ -119,7 +119,7 @@ if __name__ == '__main__':
   # txt_fn = f'{folder}/transcription.txt'
   # with open(txt_fn, 'r') as f: text = f.read()
 
-  folder = 'outputs/biocomputing_unit_1_reading_1'
+  folder = 'outputs/biocomputing_unit_1_reading_3'
   text = pdf_to_text(f'{folder}/text.pdf')
 
   summary_obj = main(text)

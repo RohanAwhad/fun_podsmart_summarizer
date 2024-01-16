@@ -59,10 +59,10 @@ SUMMARY_STAGE_1_MAP_LLM = Together(
   top_p=0.6,
 )
 SUMMARY_STAGE_2_MAP_LLM = Together(
-  temperature=0.8,
+  temperature=0,
   model='mistralai/Mixtral-8x7B-Instruct-v0.1',
   max_tokens=1024,
-  top_p=0.8,
+  top_p=0.6,
 )
 SUMMARY_STAGE_2_TITLE_LLM = OpenAI(temperature=0, model_name=model_name)
 SUMMARY_STAGE_2_REDUCE_LLM = OpenAI(temperature=0, model_name=model_name, max_tokens = 1024)
