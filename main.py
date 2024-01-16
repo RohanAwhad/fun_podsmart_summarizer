@@ -3,21 +3,23 @@ import langchain
 langchain.debug = True
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 from langchain.callbacks import FileCallbackHandler
 from loguru import logger
 from nltk.tokenize import sent_tokenize
 from pydantic import BaseModel
-from scipy.spatial.distance import cosine
 from typing import Dict, List, Optional
 
 from src import utils
 from src.encoder_service import encode
-from src.pdf_reader import pdf_to_text
 from src.summarizer import summarize_stage_1, summarize_stage_2
 
-VERSION = '1.3.2'
+VERSION = '1.4.1'
+
+import nltk
+try: nltk.data.find('punkt')
+except LookupError: nltk.download('punkt')
+
 logfile = f'logs/main_v{VERSION}.log'
 logger.add(logfile, colorize=True, enqueue=True)
 handler = FileCallbackHandler(logfile)
@@ -36,6 +38,7 @@ class MainOut(BaseModel):
 
 
 def save_similarity_matrix_plot(similarity_matrix: np.ndarray, filename: str):
+  import matplotlib.pyplot as plt
   # Draw a heatmap with the summary_similarity_matrix
   plt.figure()
   # Color scheme blues
@@ -45,6 +48,7 @@ def save_similarity_matrix_plot(similarity_matrix: np.ndarray, filename: str):
 
 
 def save_topics_plot(topics: List[List[int]], filename: str):
+  import matplotlib.pyplot as plt
   # Plot a heatmap of this array
   plt.figure(figsize = (10, 4))
   plt.imshow(np.array(topics).reshape(1, -1), cmap = 'tab20')
@@ -91,7 +95,7 @@ def main(text: str) -> MainOut:
     for row in range(num_1_chunks):
       for col in range(row, num_1_chunks):
         # Calculate cosine similarity between the two vectors
-        similarity = 1- cosine(summary_embeds[row], summary_embeds[col])
+        similarity = utils.cosine_similarity(summary_embeds[row], summary_embeds[col])
         summary_similarity_matrix[row, col] = similarity
         summary_similarity_matrix[col, row] = similarity
 
@@ -125,6 +129,7 @@ if __name__ == '__main__':
   # txt_fn = f'{folder}/transcription.txt'
   # with open(txt_fn, 'r') as f: text = f.read()
 
+  from src.pdf_reader import pdf_to_text
   folder = 'outputs/biocomputing_unit_1_reading_3'
   text = pdf_to_text(f'{folder}/text.pdf')
 

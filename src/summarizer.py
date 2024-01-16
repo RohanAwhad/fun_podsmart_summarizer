@@ -160,11 +160,18 @@ def summarize_stage_2(stage_1_outputs, topics, summary_num_words = 250, handler=
     reduce_llm=SUMMARY_STAGE_2_REDUCE_LLM,
     callbacks=[handler],
     verbose=verbose,
+    # stop=["---"],  # TODO (rohan): find a way to add stop tokens to the chain
   )
 
   output = chain({"input_documents": docs}, return_only_outputs = True)
   summaries = output['intermediate_steps']
   stage_2_outputs = [{'title': t, 'summary': s.strip()} for t, s in zip(titles, summaries)]
+
+  # if summaries in stage_2_outputs end with '---', remove it
+  for i, s in enumerate(stage_2_outputs):
+    if s['summary'].endswith('---'):
+      stage_2_outputs[i]['summary'] = s['summary'][:-3].strip()
+
   final_summary = output['output_text']
 
   # Return: stage_1_outputs (title and summary), stage_2_outputs (title and summary), final_summary, chunk_allocations

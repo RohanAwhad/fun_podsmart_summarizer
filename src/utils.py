@@ -2,12 +2,18 @@ import pandas as pd
 import numpy as np
 import networkx as nx
 from networkx.algorithms import community
-from typing import List, Dict
+from typing import List, Dict, Union
 import re
+import numpy as np
 
+def cosine_similarity(a: Union[List[float], np.ndarray], b: Union[List[float], np.ndarray]) -> float:
+  if isinstance(a, list): a = np.array(a)
+  if isinstance(b, list): b = np.array(b)
+  norm_a = np.linalg.norm(a)
+  norm_b = np.linalg.norm(b)
+  return (a @ b / (norm_a * norm_b))
 
 def create_sentences(segments, MIN_WORDS, MAX_WORDS):
-
   # Combine the non-sentences together
   sentences = []
 
