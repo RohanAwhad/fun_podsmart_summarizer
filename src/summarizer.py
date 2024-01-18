@@ -69,6 +69,8 @@ SUMMARY_STAGE_2_REDUCE_LLM = OpenAI(temperature=0, model_name=model_name, max_to
 
 
 def summarize_stage_1(chunks_text, handler=None, verbose=False):
+  if handler is None: handler = []
+  elif not isinstance(handler, list): handler = [handler]
   
   print(f'Start time: {datetime.now()}')
 
@@ -76,7 +78,7 @@ def summarize_stage_1(chunks_text, handler=None, verbose=False):
   map_prompt = PromptTemplate(template=SUMMARY_STAGE_1_MAP_PROMPT, input_variables=["text"])
 
   # Define the LLMs
-  map_llm_chain = LLMChain(llm = SUMMARY_STAGE_1_MAP_LLM, prompt = map_prompt, callbacks=[handler], verbose=verbose)
+  map_llm_chain = LLMChain(llm = SUMMARY_STAGE_1_MAP_LLM, prompt = map_prompt, callbacks=handler, verbose=verbose)
   map_llm_chain_input = [{'text': t} for t in chunks_text]
   # Run the input through the LLM chain (works in parallel)
   map_llm_chain_results = map_llm_chain.apply(map_llm_chain_input)
@@ -89,6 +91,9 @@ def summarize_stage_1(chunks_text, handler=None, verbose=False):
 
 
 def summarize_stage_2(stage_1_outputs, topics, summary_num_words = 250, handler=None, verbose=False):
+  if handler is None: handler = []
+  elif not isinstance(handler, list): handler = [handler]
+
   print(f'Stage 2 start time {datetime.now()}')
   
   # Prompt that passes in all the titles of a topic, and asks for an overall title of the topic
@@ -136,7 +141,7 @@ def summarize_stage_2(stage_1_outputs, topics, summary_num_words = 250, handler=
   
   # print('topics_titles_concat_all', topics_titles_concat_all)
 
-  title_llm_chain = LLMChain(llm = SUMMARY_STAGE_2_TITLE_LLM, prompt = title_prompt, callbacks=[handler], verbose=verbose)
+  title_llm_chain = LLMChain(llm = SUMMARY_STAGE_2_TITLE_LLM, prompt = title_prompt, callbacks=handler, verbose=verbose)
   title_llm_chain_input = [{'text': topics_titles_concat_all}]
   title_llm_chain_results = title_llm_chain.apply(title_llm_chain_input)
   
@@ -158,7 +163,7 @@ def summarize_stage_2(stage_1_outputs, topics, summary_num_words = 250, handler=
     return_intermediate_steps=True,
     llm=SUMMARY_STAGE_2_MAP_LLM,
     reduce_llm=SUMMARY_STAGE_2_REDUCE_LLM,
-    callbacks=[handler],
+    callbacks=handler,
     verbose=verbose,
     # stop=["---"],  # TODO (rohan): find a way to add stop tokens to the chain
   )
