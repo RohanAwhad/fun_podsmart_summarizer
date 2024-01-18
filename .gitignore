@@ -4,3 +4,4 @@ logs
 gpt2
 .DS_Store
 *.env
+scratch.py
