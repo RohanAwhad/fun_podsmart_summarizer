@@ -6,12 +6,20 @@ from typing import List, Dict, Union
 import re
 import numpy as np
 
-def cosine_similarity(a: Union[List[float], np.ndarray], b: Union[List[float], np.ndarray]) -> float:
+def cosine_similarity(a: Union[List[float], np.ndarray], b: Union[List[float], np.ndarray]) -> np.ndarray:
   if isinstance(a, list): a = np.array(a)
   if isinstance(b, list): b = np.array(b)
-  norm_a = np.linalg.norm(a)
-  norm_b = np.linalg.norm(b)
-  return (a @ b / (norm_a * norm_b))
+
+  # check if a and b are 2D matrices
+  assert len(a.shape) == 2, 'Matrices must be 2D'
+  assert len(b.shape) == 2, 'Matrices must be 2D'
+
+  # check if the matrices are the same shape
+  assert a.shape == b.shape, 'Matrices must be the same shape'
+
+  norm_a = np.linalg.norm(a, axis=1, keepdims=True)
+  norm_b = np.linalg.norm(b, axis=1, keepdims=True)
+  return (a @ b.T / (norm_a * norm_b))
 
 def create_sentences(segments, MIN_WORDS, MAX_WORDS):
   # Combine the non-sentences together

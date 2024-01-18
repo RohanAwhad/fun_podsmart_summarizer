@@ -71,7 +71,6 @@ def main(text: str) -> MainOut:
   stage_1_outputs = summarize_stage_1(chunks_text, handler=handler, verbose=True)['stage_1_outputs']
   # Split the titles and summaries
   stage_1_summaries = [e['summary'] for e in stage_1_outputs]
-  stage_1_titles = [e['title'] for e in stage_1_outputs]
   num_1_chunks = len(stage_1_summaries)
 
   # check if num_1_chunks < 8, if so, skip chunking, directly send to stage 2
@@ -80,21 +79,11 @@ def main(text: str) -> MainOut:
     topics = [list(range(num_1_chunks))]
     summary_similarity_matrix = None
   else:
-    # summary and title embeddings
+    # summary embeddings
     summary_embeds = encode(stage_1_summaries)
-    # title_embeds = encode(stage_1_titles)
 
     # Get similarity matrix between the embeddings of the chunk summaries
-    summary_similarity_matrix = np.zeros((num_1_chunks, num_1_chunks))
-    summary_similarity_matrix[:] = np.nan
-
-    for row in range(num_1_chunks):
-      for col in range(row, num_1_chunks):
-        # Calculate cosine similarity between the two vectors
-        similarity = utils.cosine_similarity(summary_embeds[row], summary_embeds[col])
-        summary_similarity_matrix[row, col] = similarity
-        summary_similarity_matrix[col, row] = similarity
-
+    summary_similarity_matrix = utils.cosine_similarity(summary_embeds, summary_embeds)
 
     # Run the community detection algorithm
     # Set num_topics to be 1/4 of the number of chunks, or 8, which ever is smaller
