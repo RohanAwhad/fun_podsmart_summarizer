@@ -1,6 +1,7 @@
 # [Reference]: https://towardsdatascience.com/summarize-podcast-transcripts-and-long-texts-better-with-nlp-and-ai-e04c89d3b2cb
 import langchain
-langchain.debug = True
+langchain.debug = False
+VERBOSE = False
 
 import numpy as np
 
@@ -64,11 +65,11 @@ def main(text: str) -> MainOut:
   segments = [x for sent in segments for x in sent]
 
   sentences = utils.create_sentences(segments, MIN_WORDS=20, MAX_WORDS=80)
-  chunks = utils.create_chunks(sentences, CHUNK_LENGTH=15, STRIDE=2)
+  chunks = utils.create_chunks(sentences, CHUNK_LENGTH=10, STRIDE=2)
   chunks_text = [chunk['text'] for chunk in chunks]
 
   # Run Stage 1 Summarizing
-  stage_1_outputs = summarize_stage_1(chunks_text, handler=handler, verbose=True)['stage_1_outputs']
+  stage_1_outputs = summarize_stage_1(chunks_text, handler=handler, verbose=VERBOSE)['stage_1_outputs']
   # Split the titles and summaries
   stage_1_summaries = [e['summary'] for e in stage_1_outputs]
   num_1_chunks = len(stage_1_summaries)
@@ -94,7 +95,7 @@ def main(text: str) -> MainOut:
     topics = topics_out['topics']
 
   # Query GPT-3 to get a summarized title for each topic_data
-  out = summarize_stage_2(stage_1_outputs, topics, summary_num_words = 250, handler=handler, verbose=True)
+  out = summarize_stage_2(stage_1_outputs, topics, summary_num_words = 250, handler=handler, verbose=VERBOSE)
   markdown_summary = utils.json_to_md(out['stage_2_outputs'])
 
   return MainOut(
@@ -109,26 +110,6 @@ def main(text: str) -> MainOut:
 
 
 if __name__ == '__main__':
-  # with open('chapter_8_biocomputing_reading.txt', 'r') as f: text = f.read()
-  # folder = 'outputs/lex_fridman_x_neil_gershinfeld'
-  # txt_fn = f'{folder}/transcription.txt'
-  # with open(txt_fn, 'r') as f: text = f.read()
-
-  from src.pdf_reader import pdf_to_text
-  folder = 'outputs/biocomputing_unit_1_reading_3'
-  text = pdf_to_text(f'{folder}/text.pdf')
-
-  summary_obj = main(text)
-
-  # save summary_obj
   import json
-  with open(f'{folder}/stage_1_outputs.json', 'w') as f: json.dump(summary_obj.stage_1_outputs, f)
-  with open(f'{folder}/stage_2_outputs.json', 'w') as f: json.dump(summary_obj.stage_2_outputs, f)
-  with open(f'{folder}/final_summary.txt', 'w') as f: f.write(summary_obj.final_summary)
-  with open(f'{folder}/markdown_summary.md', 'w') as f: f.write(summary_obj.markdown_summary)
-  save_similarity_matrix_plot(summary_obj.summary_similarity_matrix, f'{folder}/summary_similarity_matrix.png')
-  save_topics_plot(summary_obj.chunk_topics, f'{folder}/chunk_topics.png')
-
-  # import pickle
-  # with open(f'summary_obj_v{VERSION}.pkl', 'wb') as f: pickle.dump(summary_obj, f)
-  # main(pdf_to_text('denning.pdf'))
+  with open('tests/long_input.json', 'r') as f: text = json.load(f)['text']
+  summary_obj = main(text)
