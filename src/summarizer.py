@@ -12,6 +12,7 @@ from . import utils
 model_name = 'mistralai/Mixtral-8x7B-Instruct-v0.1'
 model_name = 'gpt-3.5-turbo-1106'
 
+STOP_TOKENS = ['\n\n', '---']
 SUMMARY_STAGE_1_MAP_PROMPT = (
 '[INST]\n'
 'Write a concise summary for text enclosed in triple backticks (```)\n'
@@ -79,7 +80,7 @@ def summarize_stage_1(chunks_text, handler=None, verbose=False):
 
   # Define the LLMs
   map_llm_chain = LLMChain(llm = SUMMARY_STAGE_1_MAP_LLM, prompt = map_prompt, callbacks=handler, verbose=verbose)
-  map_llm_chain_input = [{'text': t} for t in chunks_text]
+  map_llm_chain_input = [{'text': t, 'stop': STOP_TOKENS} for t in chunks_text]
   # Run the input through the LLM chain (works in parallel)
   map_llm_chain_results = map_llm_chain.apply(map_llm_chain_input)
 
@@ -142,7 +143,7 @@ def summarize_stage_2(stage_1_outputs, topics, summary_num_words = 250, handler=
   # print('topics_titles_concat_all', topics_titles_concat_all)
 
   title_llm_chain = LLMChain(llm = SUMMARY_STAGE_2_TITLE_LLM, prompt = title_prompt, callbacks=handler, verbose=verbose)
-  title_llm_chain_input = [{'text': topics_titles_concat_all}]
+  title_llm_chain_input = [{'text': topics_titles_concat_all, 'stop': STOP_TOKENS}]
   title_llm_chain_results = title_llm_chain.apply(title_llm_chain_input)
   
   
@@ -168,14 +169,15 @@ def summarize_stage_2(stage_1_outputs, topics, summary_num_words = 250, handler=
     # stop=["---"],  # TODO (rohan): find a way to add stop tokens to the chain
   )
 
-  output = chain({"input_documents": docs}, return_only_outputs = True)
+  output = chain({"input_documents": docs, 'stop': STOP_TOKENS}, return_only_outputs = True)
   summaries = output['intermediate_steps']
   stage_2_outputs = [{'title': t, 'summary': s.strip()} for t, s in zip(titles, summaries)]
 
   # if summaries in stage_2_outputs end with '---', remove it
   for i, s in enumerate(stage_2_outputs):
-    if s['summary'].endswith('---'):
-      stage_2_outputs[i]['summary'] = s['summary'][:-3].strip()
+    if '---' in s['summary']:
+      _ = s['summary'].find('---')
+      stage_2_outputs[i]['summary'] = s['summary'][:_].strip()
 
   final_summary = output['output_text']
 
