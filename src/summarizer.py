@@ -12,7 +12,7 @@ from . import utils
 model_name = 'mistralai/Mixtral-8x7B-Instruct-v0.1'
 model_name = 'gpt-3.5-turbo-1106'
 
-STOP_TOKENS = ['\n\n', '---']
+STOP_TOKENS = ['---']
 SUMMARY_STAGE_1_MAP_PROMPT = (
 '[INST]\n'
 'Write a concise summary for text enclosed in triple backticks (```)\n'
