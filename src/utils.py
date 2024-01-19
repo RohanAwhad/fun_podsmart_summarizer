@@ -1,10 +1,10 @@
-import pandas as pd
-import numpy as np
 import networkx as nx
+import numpy as np
+import pandas as pd
+import re
 from networkx.algorithms import community
 from typing import List, Dict, Union
-import re
-import numpy as np
+from loguru import logger
 
 def cosine_similarity(a: Union[List[float], np.ndarray], b: Union[List[float], np.ndarray]) -> np.ndarray:
   if isinstance(a, list): a = np.array(a)
@@ -107,18 +107,30 @@ def get_topics(title_similarity, num_topics = 8, bonus_constant = 0.25, min_size
   # Store the accepted partitionings
   topics_title_accepted = []
 
-  resolution = 0.85
+  resolution = 0.7
   resolution_step = 0.01
   iterations = 40
 
   # Find the resolution that gives the desired number of topics
   topics_title = []
+  _ = 0
   while len(topics_title) not in [desired_num_topics, desired_num_topics + 1, desired_num_topics + 2]:
     topics_title = community.louvain_communities(title_nx_graph, weight = 'weight', resolution = resolution)
     resolution += resolution_step
+    _ += 1
+    if _ > 1000:
+      msg = (
+        'breaking because cnt > 1000\n'
+        f'len(topics_title): {len(topics_title)}\n'
+        f'resolution: {resolution}\n'
+        f'topics_title: {topics_title}'
+        f'title_similarity: {title_similarity}\n'
+      )
+      logger.error(msg)
+      break
   topic_sizes = [len(c) for c in topics_title]
   sizes_sd = np.std(topic_sizes)
-  modularity = community.modularity(title_nx_graph, topics_title, weight = 'weight', resolution = resolution)
+  # modularity = community.modularity(title_nx_graph, topics_title, weight = 'weight', resolution = resolution)
 
   lowest_sd_iteration = 0
   # Set lowest sd to inf
@@ -126,7 +138,7 @@ def get_topics(title_similarity, num_topics = 8, bonus_constant = 0.25, min_size
 
   for i in range(iterations):
     topics_title = community.louvain_communities(title_nx_graph, weight = 'weight', resolution = resolution)
-    modularity = community.modularity(title_nx_graph, topics_title, weight = 'weight', resolution = resolution)
+    # modularity = community.modularity(title_nx_graph, topics_title, weight = 'weight', resolution = resolution)
     
     # Check SD
     topic_sizes = [len(c) for c in topics_title]
