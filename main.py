@@ -65,7 +65,7 @@ def main(text: str) -> MainOut:
   segments = [x for sent in segments for x in sent]
 
   sentences = utils.create_sentences(segments, MIN_WORDS=20, MAX_WORDS=80)
-  chunks = utils.create_chunks(sentences, CHUNK_LENGTH=10, STRIDE=2)
+  chunks = utils.create_chunks(sentences, CHUNK_LENGTH=15, STRIDE=2)
   chunks_text = [chunk['text'] for chunk in chunks]
 
   # Run Stage 1 Summarizing
