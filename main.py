@@ -17,9 +17,10 @@ from src.summarizer import summarize_stage_1, summarize_stage_2
 
 VERSION = '1.4.2'
 
-logfile = f'logs/main_v{VERSION}.log'
-logger.add(logfile, colorize=True, enqueue=True)
-handler = FileCallbackHandler(logfile)
+# logfile = f'logs/main_v{VERSION}.log'
+# logger.add(logfile, colorize=True, enqueue=True)
+# handler = FileCallbackHandler(logfile)
+handler = None
 
 
 class MainOut(BaseModel):

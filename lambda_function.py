@@ -22,6 +22,7 @@ def handler(event, context):
   try:
     out = run(text)
     stages = [out.stage_1_outputs, out.stage_2_outputs]
+    stages = [{'outputs': s} for s in stages]
     stages[0]['chunk_topics'] = out.chunk_topics
     return LambdaOut(
       stages=stages,
