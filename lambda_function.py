@@ -2,14 +2,6 @@ from main import main as run
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 
-# read from sqs into messages_list
-# loop over messages_list
-#   get url from body
-#   get receipt_handle from message
-#   run the main function
-#   update item with url =`url` with data to dynamodb
-#   delete message from sqs with receipt_handle
-
 class LambdaOut(BaseModel):
   stages: List[Dict[str, Any]]
   final_summary: Optional[str] = None
