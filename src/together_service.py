@@ -10,6 +10,7 @@ import os
 # together ai config
 url = "https://api.together.xyz/v1/completions"
 api_key = os.environ['TOGETHER_API_KEY']
+NUM_WORKERS = int(os.environ.get('TOGETHER_NUM_WORKERS', 2))
 
 
 def init(): pass
@@ -21,7 +22,6 @@ class _LLM:
     llm: str,
     session: aiohttp.ClientSession,
     text_list: List[str],
-    num_workers: int=8,
     max_tokens: int=512,
     temperature: float=0.7,
     top_p: float=0.7,
@@ -32,7 +32,7 @@ class _LLM:
     self.url = url
     self.session = session
     self.text_list = text_list
-    self.num_workers = num_workers
+    self.num_workers = NUM_WORKERS
     self.pbar = tqdm(total=len(text_list), desc="Generating", leave=False)
 
     self._todo = asyncio.Queue()
@@ -104,7 +104,6 @@ async def _generate(
       llm,
       session,
       text,
-      num_workers=8,
       max_tokens=max_tokens,
       temperature=temperature,
       top_p=top_p,
