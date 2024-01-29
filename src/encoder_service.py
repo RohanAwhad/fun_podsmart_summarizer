@@ -1,13 +1,15 @@
 import aiohttp
 import asyncio
+import json
 
 from loguru import logger
 from tqdm import tqdm
 from typing import Union, List
 import numpy as np
+import os
 
 
-url = "https://fun-sentence-embedder-c8f3c4818216.herokuapp.com"
+url = os.environ["SENTENCE_EMBEDDER_SERVICE_URL"]
 
 
 def init(): pass
@@ -42,7 +44,12 @@ class _Encoder:
     await self._todo.join()
     for w in workers: w.cancel()
     
-    for res in self.responses: embeddings.append(np.array(res['embeddings']))
+    for res in self.responses:
+      if 'errorMessage' in res:
+        raise Exception(f"Failed to encode text. Error: {res['errorMessage']}")
+
+      body = json.loads(res['body'])
+      embeddings.append(np.array(body['embeddings']))
     return np.concatenate(embeddings, axis=0)
 
   async def worker(self):
@@ -53,7 +60,8 @@ class _Encoder:
   async def process_one(self):
     text_batch = await self._todo.get()
     try:
-      async with self.session.post(self.url + "/embed_batch", json=text_batch) as response:
+      data = {'text': text_batch}
+      async with self.session.post(self.url, json=data) as response:
         if response.status != 200: raise Exception(f"Failed to encode text: {text_batch}. Got text: {await response.text()}")
         self.responses.append(await response.json())
     except Exception as e: logger.error(e)
@@ -62,12 +70,12 @@ class _Encoder:
       self._todo.task_done()
         
 
-async def _encode(text: Union[str, list[str]], batch_size: int=8) -> np.ndarray:
+async def _encode(text: Union[str, List[str]], batch_size: int=8) -> np.ndarray:
   async with aiohttp.ClientSession() as session:
     _encoder = _Encoder(url, session, text, batch_size=batch_size, num_workers=8)
     return await _encoder._encode_batch()
 
-def encode(text: Union[str, list[str]]) -> np.ndarray:
+def encode(text: Union[str, List[str]]) -> np.ndarray:
   if isinstance(text, str): text = [text]
   return asyncio.run(_encode(text, batch_size=8))
 
