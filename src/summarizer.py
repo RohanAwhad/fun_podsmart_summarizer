@@ -1,12 +1,7 @@
-import os
-
 from datetime import datetime
 from langchain_community.chat_models import ChatOpenAI as OpenAI
-from langchain_together import Together
 from langchain.chains.llm import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain.docstore.document import Document
-from langchain.chains.summarize import load_summarize_chain
 
 from . import together_service
 from . import utils
@@ -56,18 +51,6 @@ SUMMARY_STAGE_2_MAP_PROMPT = (
   'Summary:\n'
 )
 
-SUMMARY_STAGE_1_MAP_LLM = Together(
-  temperature=0.4,
-  model='mistralai/Mixtral-8x7B-Instruct-v0.1',
-  max_tokens=1024,
-  top_p=0.6,
-)
-SUMMARY_STAGE_2_MAP_LLM = Together(
-  temperature=0,
-  model='mistralai/Mixtral-8x7B-Instruct-v0.1',
-  max_tokens=1024,
-  top_p=0.6,
-)
 SUMMARY_STAGE_2_TITLE_LLM = OpenAI(temperature=0, model_name=model_name)
 SUMMARY_STAGE_2_REDUCE_LLM = OpenAI(temperature=0, model_name=model_name, max_tokens = 1024)
 
@@ -155,26 +138,6 @@ def summarize_stage_2(stage_1_outputs, topics, summary_num_words = 250, handler=
   titles = [t for t in titles if t != '']
   # Remove spaces at start or end of each title
   titles = [t.strip() for t in titles]
-
-  # # === Get Summaries ===
-  # # Run the map-reduce chain
-  # docs = [Document(page_content=t) for t in topics_summary_concat]
-  # chain = load_summarize_chain(
-  #   chain_type="map_reduce",
-  #   map_prompt=map_prompt,
-  #   combine_prompt=combine_prompt,
-  #   return_intermediate_steps=True,
-  #   llm=SUMMARY_STAGE_2_MAP_LLM,
-  #   reduce_llm=SUMMARY_STAGE_2_REDUCE_LLM,
-  #   callbacks=handler,
-  #   verbose=verbose,
-  #   # stop=["---"],  # TODO (rohan): find a way to add stop tokens to the chain
-  # )
-
-  # output = chain({"input_documents": docs, 'stop': STOP_TOKENS}, return_only_outputs = True)
-  # final_summary = output['output_text']
-  # summaries = output['intermediate_steps']
-  # stage_2_outputs = [{'title': t, 'summary': s.strip()} for t, s in zip(titles, summaries)]
 
   # === My Implementation for stage 2 summaries ===
   input_docs = [SUMMARY_STAGE_2_MAP_PROMPT.format(text=t) for t in topics_summary_concat]
