@@ -111,6 +111,25 @@ def main(text: str) -> MainOut:
 
 
 if __name__ == '__main__':
+  logfile = f'logs/main_v{VERSION}.log'
+  logger.add(logfile, colorize=True, enqueue=True)
+  handler = FileCallbackHandler(logfile)
+  VERBOSE = True
+
   import json
   with open('tests/long_input.json', 'r') as f: text = json.load(f)['text']
+
+  import time
+  start_time = time.monotonic()
   summary_obj = main(text)
+  end_time = time.monotonic()
+  execution_time = end_time - start_time
+
+  # for item in summary_obj.stage_1_outputs:
+  #   print(f'=== {item["title"]} ===')
+  #   print(item['summary'])
+  #   print()
+
+  print(summary_obj.markdown_summary)
+
+  print(f"Execution time: {execution_time} seconds")
