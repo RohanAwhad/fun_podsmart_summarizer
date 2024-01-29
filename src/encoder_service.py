@@ -61,9 +61,20 @@ class _Encoder:
     text_batch = await self._todo.get()
     try:
       data = {'text': text_batch}
-      async with self.session.post(self.url, json=data) as response:
-        if response.status != 200: raise Exception(f"Failed to encode text: {text_batch}. Got text: {await response.text()}")
-        self.responses.append(await response.json())
+      retry_attempt = 0
+      max_retry = 3
+      while True:
+        async with self.session.post(self.url, json=data) as response:
+          if response.status != 200:
+            if retry_attempt < max_retry:
+              retry_attempt += 1
+              logger.warning(f"Failed to encode text: {text_batch}. Got status code: {response.status}. Retrying...")
+              continue
+
+            raise Exception(f"Failed to encode text: {text_batch}. Got text: {await response.text()}")
+
+          self.responses.append(await response.json())
+          break
     except Exception as e: logger.error(e)
     finally:
       self.pbar.update(1)
