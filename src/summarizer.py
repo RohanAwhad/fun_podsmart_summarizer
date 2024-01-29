@@ -83,23 +83,10 @@ def summarize_stage_1(chunks_text, handler=None, verbose=False):
     'mistralai/Mixtral-8x7B-Instruct-v0.1',
     max_tokens=1024,
     top_p=0.6,
-    temperature=0,
+    temperature=0.4,
     stop_tokens=['---']
   )
   stage_1_outputs = utils.parse_title_summary_results(map_llm_chain_results)
-
-  # Prompt to get title and summary for each chunk
-  # map_prompt = PromptTemplate(template=SUMMARY_STAGE_1_MAP_PROMPT, input_variables=["text"])
-
-  # # Define the LLMs
-  # map_llm_chain = LLMChain(llm = SUMMARY_STAGE_1_MAP_LLM, prompt = map_prompt, callbacks=handler, verbose=verbose)
-  # map_llm_chain_input = [{'text': t, 'stop': STOP_TOKENS} for t in chunks_text]
-  # # Run the input through the LLM chain (works in parallel)
-  # import asyncio
-  # map_llm_chain_results = asyncio.run(map_llm_chain.aapply(map_llm_chain_input))
-  # # map_llm_chain_results = map_llm_chain.apply(map_llm_chain_input)
-
-  # stage_1_outputs = utils.parse_title_summary_results([e['text'] for e in map_llm_chain_results])
 
   print(f'Stage 1 done time {datetime.now()}')
   return {'stage_1_outputs': stage_1_outputs}
@@ -169,32 +156,56 @@ def summarize_stage_2(stage_1_outputs, topics, summary_num_words = 250, handler=
   # Remove spaces at start or end of each title
   titles = [t.strip() for t in titles]
 
-  # === Get Summaries ===
-  # Run the map-reduce chain
-  docs = [Document(page_content=t) for t in topics_summary_concat]
-  chain = load_summarize_chain(
-    chain_type="map_reduce",
-    map_prompt=map_prompt,
-    combine_prompt=combine_prompt,
-    return_intermediate_steps=True,
-    llm=SUMMARY_STAGE_2_MAP_LLM,
-    reduce_llm=SUMMARY_STAGE_2_REDUCE_LLM,
-    callbacks=handler,
-    verbose=verbose,
-    # stop=["---"],  # TODO (rohan): find a way to add stop tokens to the chain
-  )
+  # # === Get Summaries ===
+  # # Run the map-reduce chain
+  # docs = [Document(page_content=t) for t in topics_summary_concat]
+  # chain = load_summarize_chain(
+  #   chain_type="map_reduce",
+  #   map_prompt=map_prompt,
+  #   combine_prompt=combine_prompt,
+  #   return_intermediate_steps=True,
+  #   llm=SUMMARY_STAGE_2_MAP_LLM,
+  #   reduce_llm=SUMMARY_STAGE_2_REDUCE_LLM,
+  #   callbacks=handler,
+  #   verbose=verbose,
+  #   # stop=["---"],  # TODO (rohan): find a way to add stop tokens to the chain
+  # )
 
-  output = chain({"input_documents": docs, 'stop': STOP_TOKENS}, return_only_outputs = True)
-  summaries = output['intermediate_steps']
+  # output = chain({"input_documents": docs, 'stop': STOP_TOKENS}, return_only_outputs = True)
+  # final_summary = output['output_text']
+  # summaries = output['intermediate_steps']
+  # stage_2_outputs = [{'title': t, 'summary': s.strip()} for t, s in zip(titles, summaries)]
+
+  # === My Implementation for stage 2 summaries ===
+  input_docs = [SUMMARY_STAGE_2_MAP_PROMPT.format(text=t) for t in topics_summary_concat]
+  summaries = together_service.generate(
+    input_docs,
+    'mistralai/Mixtral-8x7B-Instruct-v0.1',
+    max_tokens=1024,
+    top_p=0.6,
+    temperature=0,
+    stop_tokens=['---']
+  )
   stage_2_outputs = [{'title': t, 'summary': s.strip()} for t, s in zip(titles, summaries)]
 
+  # === My Implementation for final summary ===
+  final_summary_prompt = (
+    'Write a 250-word summary of the following, removing irrelevant information. Finish your answer:\n'
+    '\n'
+    '{text}\n'
+    '---\n'
+    '250-WORD SUMMARY:'
+  )
+  final_summary = SUMMARY_STAGE_2_REDUCE_LLM.invoke(final_summary_prompt).content
+
+  # === Post Processing ===
   # if summaries in stage_2_outputs end with '---', remove it
   for i, s in enumerate(stage_2_outputs):
     if '---' in s['summary']:
       _ = s['summary'].find('---')
       stage_2_outputs[i]['summary'] = s['summary'][:_].strip()
 
-  final_summary = output['output_text']
+
 
   # Return: stage_1_outputs (title and summary), stage_2_outputs (title and summary), final_summary, chunk_allocations
   out = {'stage_2_outputs': stage_2_outputs, 'final_summary': final_summary}
