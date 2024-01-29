@@ -1,3 +1,5 @@
+import os
+
 from datetime import datetime
 from langchain_community.chat_models import ChatOpenAI as OpenAI
 from langchain_together import Together
@@ -6,10 +8,11 @@ from langchain.prompts import PromptTemplate
 from langchain.docstore.document import Document
 from langchain.chains.summarize import load_summarize_chain
 
+from . import together_service
 from . import utils
 
 # model_name = 'togethercomputer/llama-2-7b-chat'
-model_name = 'mistralai/Mixtral-8x7B-Instruct-v0.1'
+# model_name = 'mistralai/Mixtral-8x7B-Instruct-v0.1'
 model_name = 'gpt-3.5-turbo-1106'
 
 STOP_TOKENS = ['---']
@@ -74,17 +77,29 @@ def summarize_stage_1(chunks_text, handler=None, verbose=False):
   elif not isinstance(handler, list): handler = [handler]
   
   print(f'Start time: {datetime.now()}')
+  llm_chain_input = [SUMMARY_STAGE_1_MAP_PROMPT.format(text=t) for t in chunks_text]
+  map_llm_chain_results = together_service.generate(
+    llm_chain_input,
+    'mistralai/Mixtral-8x7B-Instruct-v0.1',
+    max_tokens=1024,
+    top_p=0.6,
+    temperature=0,
+    stop_tokens=['---']
+  )
+  stage_1_outputs = utils.parse_title_summary_results(map_llm_chain_results)
 
   # Prompt to get title and summary for each chunk
-  map_prompt = PromptTemplate(template=SUMMARY_STAGE_1_MAP_PROMPT, input_variables=["text"])
+  # map_prompt = PromptTemplate(template=SUMMARY_STAGE_1_MAP_PROMPT, input_variables=["text"])
 
-  # Define the LLMs
-  map_llm_chain = LLMChain(llm = SUMMARY_STAGE_1_MAP_LLM, prompt = map_prompt, callbacks=handler, verbose=verbose)
-  map_llm_chain_input = [{'text': t, 'stop': STOP_TOKENS} for t in chunks_text]
-  # Run the input through the LLM chain (works in parallel)
-  map_llm_chain_results = map_llm_chain.apply(map_llm_chain_input)
+  # # Define the LLMs
+  # map_llm_chain = LLMChain(llm = SUMMARY_STAGE_1_MAP_LLM, prompt = map_prompt, callbacks=handler, verbose=verbose)
+  # map_llm_chain_input = [{'text': t, 'stop': STOP_TOKENS} for t in chunks_text]
+  # # Run the input through the LLM chain (works in parallel)
+  # import asyncio
+  # map_llm_chain_results = asyncio.run(map_llm_chain.aapply(map_llm_chain_input))
+  # # map_llm_chain_results = map_llm_chain.apply(map_llm_chain_input)
 
-  stage_1_outputs = utils.parse_title_summary_results([e['text'] for e in map_llm_chain_results])
+  # stage_1_outputs = utils.parse_title_summary_results([e['text'] for e in map_llm_chain_results])
 
   print(f'Stage 1 done time {datetime.now()}')
   return {'stage_1_outputs': stage_1_outputs}
