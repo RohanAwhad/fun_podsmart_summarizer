@@ -10,6 +10,8 @@ import os
 
 
 url = os.environ["SENTENCE_EMBEDDER_SERVICE_URL"]
+NUM_WORKERS = int(os.environ.get("NUM_WORKERS", 8))
+BATCH_SIZE = int(os.environ.get("BATCH_SIZE", 1))
 
 
 def init(): pass
@@ -27,9 +29,9 @@ class _Encoder:
     self.url = url
     self.session = session
     self.text_list = text_list
-    self.batch_size = batch_size
-    self.num_workers = num_workers
-    self.pbar = tqdm(total=len(text_list) // batch_size, desc="Encoding")
+    self.batch_size = BATCH_SIZE
+    self.num_workers = NUM_WORKERS
+    self.pbar = tqdm(total=len(text_list) // self.batch_size, desc="Encoding")
 
     self._todo = asyncio.Queue()
     self.responses = []
@@ -50,6 +52,8 @@ class _Encoder:
 
       body = json.loads(res['body'])
       embeddings.append(np.array(body['embeddings']))
+    print(f'total number of text chunks embedded: {len(embeddings)}')
+    print(f'embedding shape: {embeddings[0].shape}')
     return np.concatenate(embeddings, axis=0)
 
   async def worker(self):
@@ -75,7 +79,7 @@ class _Encoder:
 
           self.responses.append(await response.json())
           break
-    except Exception as e: logger.error(e)
+    except Exception as e: logger.error(f'Error: {e}')
     finally:
       self.pbar.update(1)
       self._todo.task_done()
