@@ -81,9 +81,11 @@ class _LLM:
           "Authorization": "Bearer " + api_key
       }
       async with self.session.post(self.url, json=data, headers=headers) as response:
-        if response.status != 200: raise Exception(f"Failed to encode text: {prompt}. Got text: {await response.text()}")
+        if response.status != 200: raise Exception(f"Failed to generate text: {prompt}. Got text: {await response.text()}")
         self.responses.append(await response.json())
-    except Exception as e: logger.error(e)
+    except Exception as e:
+      logger.error(e)
+      await self._todo.put(prompt)
     finally:
       self.pbar.update(1)
       self._todo.task_done()
