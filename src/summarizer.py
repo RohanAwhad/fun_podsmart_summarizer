@@ -5,8 +5,8 @@ from langchain.chains.llm import LLMChain
 from langchain.prompts import PromptTemplate
 
 
-from . import prompts, together_service, utils, fun_llm_service
-from .fun_llm_service import LLM, LLMParams
+from src import prompts, together_service, utils, fun_llm_service
+from src.fun_llm_service import LLM, LLMParams
 
 # model_name = 'togethercomputer/llama-2-7b-chat'
 # model_name = 'mistralai/Mixtral-8x7B-Instruct-v0.1'
