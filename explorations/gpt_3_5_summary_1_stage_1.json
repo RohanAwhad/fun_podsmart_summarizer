@@ -1,0 +1,98 @@
+[
+  {
+    "summary": "A reference architecture for the emerging LLM app stack is provided, showcasing the most common systems, tools, and design patterns used by AI startups and tech companies.",
+    "title": "Reference Architecture for LLM App Stack"
+  },
+  {
+    "summary": "The text discusses the LLM app stack and the design pattern of in-context learning for building with LLMs.",
+    "title": "LLM App Stack and In-Context Learning Design Pattern"
+  },
+  {
+    "summary": "The workflow of LLMs involves data preprocessing and embedding, prompt construction and retrieval, and prompt execution and inference.",
+    "title": "Workflow of LLMs"
+  },
+  {
+    "summary": "In-context learning solves the problem of limited processing capacity in large datasets by sending only the most relevant documents with each LLM prompt.",
+    "title": "In-Context Learning for Large Datasets"
+  },
+  {
+    "summary": "Increasing the context window in the underlying model of in-context learning comes with tradeoffs such as increased cost and time of inference, making it cost-prohibitive for many applications.",
+    "title": "Tradeoffs of Increasing Context Window in In-Context Learning"
+  },
+  {
+    "summary": "Prompt execution or inference involves submitting compiled prompts to a pre-trained LLM for inference, which is easier and more efficient than training or fine-tuning the LLM itself, reducing the AI problem to a data engineering problem that most companies can solve.",
+    "title": "Efficiency and Effectiveness of Prompt Execution in AI Inference"
+  },
+  {
+    "summary": "The text discusses the use of contextual data in LLM apps and the various data-loading and transformation solutions used by developers.",
+    "title": "Contextual Data and Data-loading Solutions in LLM Apps"
+  },
+  {
+    "summary": "Developers use a variety of data-loading and transformation solutions, including traditional ETL tools and document loaders, with OpenAI API being a popular choice for embeddings.",
+    "title": "Data-loading and Transformation Solutions for Developers"
+  },
+  {
+    "summary": "Larger enterprises are exploring Cohere and Sentence Transformers for embeddings, while Pinecone is the most common choice for vector database due to its cloud-hosted features.",
+    "title": "Exploring Embeddings and Vector Databases for AI Applications"
+  },
+  {
+    "summary": "There are various vector databases available, including open source systems like Weaviate, Vespa, and Qdrant, as well as local vector management libraries like Chroma and Faiss, and OLTP extensions like pgvector.",
+    "title": "Overview of Vector Databases"
+  },
+  {
+    "summary": "The future of vector databases in the cloud is uncertain and it is unclear if they will consolidate around one or two popular systems.",
+    "title": "The Future of Vector Databases in the Cloud"
+  },
+  {
+    "summary": "The importance of embeddings and vector databases may increase as the usable context window grows, despite the temptation to believe they will become less relevant due to the ability to drop contextual data directly into the prompt.",
+    "title": "The Importance of Embeddings and Vector Databases in Growing Context Windows"
+  },
+  {
+    "summary": "Developers are experimenting with more advanced prompting strategies to improve the accuracy of language models and incorporate contextual data.",
+    "title": "Advanced Prompting Strategies for Language Models"
+  },
+  {
+    "summary": "LangChain is a widely used framework for hobbyists and startups to develop apps, although some developers prefer to switch to raw Python in production to eliminate dependencies.",
+    "title": "LangChain Framework and its Usage"
+  },
+  {
+    "summary": "Orchestration frameworks like LangChain and LlamaIndex abstract away the details of prompt chaining and provide templates for common applications, making them widely used among hobbyists and startups.",
+    "title": "The Use of Orchestration Frameworks in Prompt Engineering"
+  },
+  {
+    "summary": "ChatGPT, which can be accessed as an API, performs similar functions as other orchestration frameworks and may become a viable alternative to prompt construction.",
+    "title": "ChatGPT as a Substitute Solution for Orchestration Frameworks"
+  },
+  {
+    "summary": "When projects go into production and start to scale, there are options such as switching to gpt-3.5-turbo, experimenting with other proprietary vendors, and triaging some requests to open source models.",
+    "title": "Options for Scaling App Performance"
+  },
+  {
+    "summary": "Open-source models are becoming more accurate and there are various options available for using them, including triaging requests and using different inference options.",
+    "title": "Using Open-Source Models for Improved Accuracy and Options"
+  },
+  {
+    "summary": "LLaMa, a licensed research tool, has inspired the development of alternative base models and the possibility of an open-source release, leading to the belief that smaller, fine-tuned models can achieve high accuracy in specific use cases.",
+    "title": "The Potential of LLaMa and Fine-Tuned Models"
+  },
+  {
+    "summary": "Developers are using tools like Weights & Biases, MLflow, PromptLayer, Helicone, Guardrails, and Rebuff to improve the performance and evaluation of large language models (LLMs) and to detect prompt injection attacks.",
+    "title": "Tools for Improving Large Language Models (LLMs)"
+  },
+  {
+    "summary": "There are various solutions for hosting LLM apps, including standard options like Vercel or major cloud providers, as well as emerging categories like end-to-end hosting startups and companies that allow hosting models and Python code in one place.",
+    "title": "Hosting Solutions for LLM Apps"
+  },
+  {
+    "summary": "AI agent frameworks are an important component missing from the reference architecture, and they have the potential to become a central piece of the LLM app architecture.",
+    "title": "The Importance of AI Agent Frameworks"
+  },
+  {
+    "summary": "Agents have the potential to become a central piece of the LLM app architecture, but most agent frameworks are still in the proof-of-concept phase; pre-trained AI models are the most important architectural change in software that allow individual developers to build AI apps in a matter of days.",
+    "title": "The Potential of Agents and Pre-Trained AI Models in Software Architecture"
+  },
+  {
+    "summary": "The tools and patterns provided are just the starting point for integrating LLMs, and will be updated as major changes occur.",
+    "title": "Integrating LLMs: A Starting Point"
+  }
+]

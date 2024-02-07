@@ -1,0 +1,98 @@
+[
+  {
+    "summary": "The LLM app stack is designed for in-context learning, allowing developers to use models off the shelf by controlling their behavior through prompting and contextual data.",
+    "title": "Overview of the LLM App Stack"
+  },
+  {
+    "summary": "A reference architecture for the LLM app stack is shared, based on inputs from AI startup founders and engineers, to guide developers on the common systems, tools, and design patterns for building software with large language models.",
+    "title": "Guide to Building Software with Large Language Models"
+  },
+  {
+    "summary": "In-context learning addresses the scalability issue of processing large datasets with LLMs by preprocessing data and selectively sending the most relevant documents for each prompt.",
+    "title": "Enhancing LLM Scalability with In-context Learning"
+  },
+  {
+    "summary": "The workflow for utilizing Large Language Models (LLMs) in processing private data involves data preprocessing, prompt construction and retrieval, and prompt execution for inference.",
+    "title": "Workflow of LLMs in Data Processing"
+  },
+  {
+    "summary": "Using pre-trained LLMs for inference with added operational systems simplifies AI implementation, making it a manageable data engineering problem that is cost-effective and efficient for both startups and large companies.",
+    "title": "Simplifying AI Implementation with Pre-trained LLMs"
+  },
+  {
+    "summary": "In-context learning outperforms fine-tuning on small datasets and allows for real-time data incorporation, but expanding the context window in underlying models increases costs and inference time, making it impractical for many applications.",
+    "title": "The Tradeoffs of Expanding Context Windows in In-Context Learning"
+  },
+  {
+    "summary": "The post discusses the impact of expanded context windows on the stack and explores data-loading and transformation solutions for LLM apps, without expecting major changes.",
+    "title": "Exploring Data Solutions for LLM Apps"
+  },
+  {
+    "summary": "Developers use a variety of data-loading and transformation tools, with a preference for traditional ETL tools and OpenAI's API for embeddings, highlighting an underdeveloped market for LLM app-specific data-replication solutions.",
+    "title": "Diverse Data Solutions in LLM App Development"
+  },
+  {
+    "summary": "Enterprises are exploring Cohere for embeddings with better performance, using open-source libraries like Sentence Transformers from Hugging Face, and employing vector databases like Pinecone for efficient storage and retrieval of embeddings.",
+    "title": "Trends in Enterprise Embedding Technologies"
+  },
+  {
+    "summary": "There's a diverse range of vector databases available, including open source systems like Weaviate, Vespa, and Qdrant for bespoke platforms, local libraries like Chroma and Faiss for small apps, and OLTP extensions like pgvector for those preferring a single data infrastructure provider.",
+    "title": "Overview of Vector Database Options"
+  },
+  {
+    "summary": "Despite the growing context windows of models suggesting direct data input might reduce the need for embeddings, expert feedback indicates embeddings and vector databases will likely become more crucial for efficiency and relevancy.",
+    "title": "The Evolving Importance of Embeddings"
+  },
+  {
+    "summary": "The future integration of vector and scalar workloads is uncertain, with challenges in cloud performance and the potential consolidation of vector databases similar to OLTP and OLAP systems.",
+    "title": "The Uncertain Future of Vector Databases"
+  },
+  {
+    "summary": "Emerging embedding models and advanced prompting strategies are crucial for enhancing the performance and differentiation of products utilizing large language models.",
+    "title": "Advancements in Embedding Models and Prompting Strategies"
+  },
+  {
+    "summary": "The Prompt Engineering Guide introduces 12 advanced prompting strategies for LLM use cases, with orchestration frameworks like LangChain and LlamaIndex simplifying the integration of these strategies by managing prompt chaining and external API interactions.",
+    "title": "Advanced Prompting Strategies and Orchestration Frameworks"
+  },
+  {
+    "summary": "LangChain leads among frameworks used by hobbyists and startups for app development, with a trend towards native Python in production, though this may decline as the ecosystem matures.",
+    "title": "Trends in App Development Frameworks"
+  },
+  {
+    "summary": "ChatGPT, while primarily an app, can function similarly to orchestration frameworks by abstracting prompt creation and maintaining state, and is emerging as a simple alternative in developer tools, with OpenAI's API being the preferred choice for new language model apps.",
+    "title": "ChatGPT's Role in Developer Orchestration Tools"
+  },
+  {
+    "summary": "For app scalability, options include switching to gpt-3.5-turbo for cost and speed, experimenting with Claude for customization and accuracy, and using open source models for high-volume, cost-effective service.",
+    "title": "Scaling App Performance Efficiently"
+  },
+  {
+    "summary": "Utilizing open source models for triaging requests in high-volume B2C scenarios can be cost-effective, with a variety of platforms and inference options available, and the quality gap between open source and proprietary models is narrowing.",
+    "title": "The Rise of Open Source Models in B2C Applications"
+  },
+  {
+    "summary": "Developers are using a mix of traditional and LLM-specific operational tools to improve application performance and security, with a focus on caching, logging, and evaluation.",
+    "title": "Operational Tools for LLMs in Development"
+  },
+  {
+    "summary": "Following LLaMa's restricted licensing, new providers are developing alternative models, with a potential open-source release of LLaMa 2 by Meta, signaling a future of extensive experimentation and easier access for developers to state-of-the-art, fine-tuned models.",
+    "title": "The Future of Open-Source Large Language Models"
+  },
+  {
+    "summary": "Operational tools for LLM apps favor their own Python clients, with hosting solutions evolving to include startups offering comprehensive services and companies enabling combined model and code hosting.",
+    "title": "Evolving Hosting Solutions for LLM Apps"
+  },
+  {
+    "summary": "The development community is highly interested in AI agent frameworks, like AutoGPT, for their potential to enhance AI applications by enabling complex problem-solving, interaction with the external world, and learning from post-deployment experiences.",
+    "title": "The Rising Interest in AI Agent Frameworks"
+  },
+  {
+    "summary": "The provided tools and patterns for integrating LLMs are initial guidelines that will evolve with significant updates, including shifts towards model training.",
+    "title": "Evolving Integration of LLMs"
+  },
+  {
+    "summary": "Agents, with the potential to revolutionize LLM app architecture, are currently in a proof-of-concept phase, lacking reliability in task completion, but pre-trained AI models are already enabling rapid, advanced app development.",
+    "title": "The Current State and Future of AI Agents and Pre-trained Models"
+  }
+]

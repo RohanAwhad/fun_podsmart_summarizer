@@ -1,0 +1,98 @@
+[
+  {
+    "summary": "Agents have the potential to become a central piece of the LLM app architecture, but most agent frameworks today are in the proof-of-concept phase. Pre-trained AI models represent a significant architectural change in software.",
+    "title": "Agents and Pre-trained AI Models: The Future of Software Architecture"
+  },
+  {
+    "summary": "Vector databases offer various options such as open-source systems, local vector management libraries, and OLTP extensions like pgvector, catering to different needs and expertise levels.",
+    "title": "Vector Database Options and Their Use Cases"
+  },
+  {
+    "summary": "The current tools and patterns for integrating LLMs are just the beginning, and updates will be made as significant changes occur.",
+    "title": "LLM Integration: Current State and Future Updates"
+  },
+  {
+    "summary": "To optimize app performance, consider switching to gpt-3.5-turbo, exploring Claude models, or triaging requests to open-source models for cost-effective support.",
+    "title": "Optimizing App Performance with AI Models"
+  },
+  {
+    "summary": "Cohere focuses on embeddings and is a standard for developers, while Sentence Transformers is an open-source option. The vector database, such as Pinecone, is crucial for storing, comparing, and retrieving embeddings efficiently.",
+    "title": "Embeddings and Vector Databases in AI"
+  },
+  {
+    "summary": "AI agent frameworks are crucial components missing from the reference architecture. Agents enable AI apps to solve complex problems, act on the outside world, and learn from experience post-deployment.",
+    "title": "The Importance of AI Agents"
+  },
+  {
+    "summary": "LLMs work in three stages: data preprocessing/embedding, prompt construction/retrieval, and prompt execution/inference. They store private data, construct prompts, and submit them to pre-trained models for inference.",
+    "title": "LLM Workflow: Preprocessing to Inference"
+  },
+  {
+    "summary": "Prompt execution simplifies AI problems by turning them into data engineering tasks, reducing the need for specialized ML engineers or expensive infrastructure.",
+    "title": "Simplifying AI with Prompt Execution"
+  },
+  {
+    "summary": "The evolution of embeddings and vector databases may become more important as context window sizes grow, with specialized models and databases designed to efficiently use large context windows.",
+    "title": "The Future of Embeddings and Vector Databases"
+  },
+  {
+    "summary": "LangChain is a popular framework among hobbyists and startups for building apps with LLMs. It's expected that the DIY approach of using raw Python in production will decline over time.",
+    "title": "LangChain: The Future of App Development with LLMs"
+  },
+  {
+    "summary": "The future of vector databases in the cloud is uncertain, but achieving strong performance across various use cases is a challenging problem. The evolution of embeddings and vector databases as the context window grows for most models is also uncertain.",
+    "title": "The Uncertain Future of Vector Databases"
+  },
+  {
+    "summary": "Open source models can be effective in high-volume B2C use cases, with platforms like Databricks and more offering various inference options. LLaMa models from Meta have set a new bar for open source accuracy.",
+    "title": "Advantages of Open Source Models"
+  },
+  {
+    "summary": "This article presents the AI app stack for building with LLMs using in-context learning design pattern. It provides a visual representation and links to each project for quick reference.",
+    "title": "AI App Stack for In-Context Learning with LLMs"
+  },
+  {
+    "summary": "Expanded context windows may not significantly change the AI stack, but in-context learning resources are available. The reference stack can be navigated using the workflow mentioned, with contextual data for LLM apps including various formats. Developers use traditional ETL tools like Databricks or Airflow for data loading and transformation.",
+    "title": "Navigating the AI Stack and In-Context Learning"
+  },
+  {
+    "summary": "The Prompt Engineering Guide outlines 12 advanced prompting strategies and highlights the importance of orchestration frameworks like LangChain and LlamaIndex in supporting different LLM use cases. These frameworks abstract away many details and provide templates for common applications.",
+    "title": "Advanced Prompting Strategies and Orchestration Frameworks"
+  },
+  {
+    "summary": "ChatGPT can be used as an API, offering similar functions to other orchestration frameworks. It is a popular choice among developers, with many starting new LLM apps using the OpenAI API.",
+    "title": "ChatGPT as an API Alternative"
+  },
+  {
+    "summary": "Embedding models and prompting strategies for LLMs are becoming more advanced and important for product differentiation. Advanced prompting techniques include chain-of-thought, self-consistency, generated knowledge, and more.",
+    "title": "Advancements in Embedding Models and Prompting Strategies"
+  },
+  {
+    "summary": "Developers are using caching, tools like Weights & Biases, MLflow, PromptLayer, and Helicone for operational tooling for LLMs. New tools are being developed for output validation and prompt injection attack detection.",
+    "title": "Operational Tooling for LLMs"
+  },
+  {
+    "summary": "Operational tools for LLM apps often use Python clients, while hosting options include standard solutions and new categories like Steamship and Anyscale/Modal. AI agent frameworks are missing from this architecture.",
+    "title": "LLM Apps: Hosting and Agent Frameworks"
+  },
+  {
+    "summary": "Developers use various ETL tools for data loading and transformation, with OpenAI API being the most popular choice for embeddings. Cohere is also explored by larger enterprises for better performance in certain scenarios.",
+    "title": "Data Loading and Transformation Tools for LLM Apps"
+  },
+  {
+    "summary": "In-context learning addresses the context window limitation of LLMs by selecting only the most relevant documents for processing, determined through LLM assistance. This workflow involves three stages: data preprocessing/embedding, retrieval, and inference.",
+    "title": "Scaling LLM Processing with In-Context Learning"
+  },
+  {
+    "summary": "New providers are training alternative base models as LLaMa's research-only license led to the development of new models like Together, Mosaic, Falcon, and Mistral. The open-source release of LLaMa 2 is expected to lead to a Stable Diffusion-like moment for text. Developers believe smaller, fine-tuned models can reach state-of-the-art accuracy in narrow use cases. Caching is commonly used for cost and response time improvements.",
+    "title": "The Rise of Alternative LLMs and Operational Tooling"
+  },
+  {
+    "summary": "The LLM app stack is a reference architecture for building software with large language models. It shows common systems, tools, and design patterns used by AI startups and tech companies. The stack is still early and may change, but serves as a useful reference for developers working with LLMs.",
+    "title": "LLM App Stack: A Reference Architecture"
+  },
+  {
+    "summary": "In-context learning can outperform fine-tuning for small datasets and can incorporate new data in near real time. However, increasing context window size comes with tradeoffs, such as quadratic scaling of inference cost and time. Therefore, significant changes to the stack based on expanded context windows are not expected.",
+    "title": "Tradeoffs of Expanded Context Windows in In-Context Learning"
+  }
+]
