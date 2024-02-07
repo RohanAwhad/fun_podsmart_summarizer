@@ -1,0 +1,3 @@
+[submodule "src/fun_llm_service"]
+	path = src/fun_llm_service
+	url = https://github.com/RohanAwhad/fun_llm_service.git
