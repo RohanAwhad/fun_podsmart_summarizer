@@ -1,0 +1,17 @@
+<|im_start|>system
+Summarize the below text in one sentence and give title.
+Respond in the following JSON format:
+{
+  "summary": <summary of the text>",
+  "title": <short title for the summary>
+}
+eg.
+{
+  "summary": "AI can make humans more productive by automating many repetitive processes.",
+  "title": "Why Artificial Intelligence is Good"
+}<|im_end|>
+<|im_start|>human
+'''text
+{{ text }}
+'''<|im_end|>
+<|im_start|>assistant

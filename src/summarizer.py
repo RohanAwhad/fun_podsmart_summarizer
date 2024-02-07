@@ -1,10 +1,12 @@
 from datetime import datetime
+import json
 from langchain_community.chat_models import ChatOpenAI as OpenAI
 from langchain.chains.llm import LLMChain
 from langchain.prompts import PromptTemplate
 
-from . import together_service
-from . import utils
+
+from . import prompts, together_service, utils, fun_llm_service
+from .fun_llm_service import LLM, LLMParams
 
 # model_name = 'togethercomputer/llama-2-7b-chat'
 # model_name = 'mistralai/Mixtral-8x7B-Instruct-v0.1'
@@ -54,25 +56,93 @@ SUMMARY_STAGE_2_MAP_PROMPT = (
 SUMMARY_STAGE_2_TITLE_LLM = OpenAI(temperature=0, model_name=model_name)
 SUMMARY_STAGE_2_REDUCE_LLM = OpenAI(temperature=0, model_name=model_name, max_tokens = 1024)
 
+# new fun_llm_service for stage 1
+# llm configs
+import os
+together_api_url = "https://api.together.xyz/v1/completions"
+together_api_key = os.environ['TOGETHER_API_KEY']
+
+openai_api_url = "https://api.openai.com/v1/chat/completions"
+openai_api_key = os.environ['OPENAI_API_KEY']
+
+
+nous_hermes_mixtral_params = LLMParams(
+  max_tokens=300,
+  temperature=0.5,
+  top_p=0.9,
+  top_k=50,
+  stop=['<|im_end|>']
+)
+gpt_3_5_params = LLMParams(
+  max_tokens=300,
+  temperature=0.5,
+  top_p=0.9,
+  top_k=50,
+  stop=['---']
+)
+gpt_4_params = LLMParams(
+  max_tokens=300,
+  temperature=0.5,
+  top_p=0.9,
+  top_k=50,
+  stop=['---']
+)
+
+stage_1_llms = [
+  # nous hermes mixtral
+  LLM(
+    url=together_api_url,
+    api_key=together_api_key,
+    model='NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO',
+    llm_params=nous_hermes_mixtral_params,
+    prompt_template=prompts.stage_1['nous_hermes_mixtral']
+  ),
+  # gpt 3.5
+  LLM(
+    url=openai_api_url,
+    api_key=openai_api_key,
+    model='gpt-3.5-turbo',
+    llm_params=gpt_3_5_params,
+    prompt_template=prompts.stage_1['gpt_3_5']
+  ),
+  # gpt 4
+  LLM(
+    url=openai_api_url,
+    api_key=openai_api_key,
+    model='gpt-4-turbo-preview',
+    llm_params=gpt_4_params,
+    prompt_template=prompts.stage_1['gpt_4']
+  )
+]
+def _new_parse_title_n_summary_results(ai_response: str):
+  start_idx = ai_response.find('{')
+  end_idx = ai_response.rfind('}') + 1
+  return json.loads(ai_response[start_idx:end_idx])
 
 def summarize_stage_1(chunks_text, handler=None, verbose=False):
-  if handler is None: handler = []
-  elif not isinstance(handler, list): handler = [handler]
-  
-  print(f'Start time: {datetime.now()}')
-  llm_chain_input = [SUMMARY_STAGE_1_MAP_PROMPT.format(text=t) for t in chunks_text]
-  map_llm_chain_results = together_service.generate(
-    llm_chain_input,
-    'mistralai/Mixtral-8x7B-Instruct-v0.1',
-    max_tokens=1024,
-    top_p=0.6,
-    temperature=0.4,
-    stop_tokens=['---']
-  )
-  stage_1_outputs = utils.parse_title_summary_results(map_llm_chain_results)
+  inputs = [[{'text': chunk_txt} for _ in range(len(stage_1_llms))] for chunk_txt in chunks_text]
+  outputs = fun_llm_service.generate(inputs, stage_1_llms, max_retries=2, total_timeout=20)
+  return {'stage_1_outputs': list(map(_new_parse_title_n_summary_results, outputs))}
 
-  print(f'Stage 1 done time {datetime.now()}')
-  return {'stage_1_outputs': stage_1_outputs}
+
+# def summarize_stage_1(chunks_text, handler=None, verbose=False):
+#   if handler is None: handler = []
+#   elif not isinstance(handler, list): handler = [handler]
+  
+#   print(f'Start time: {datetime.now()}')
+#   llm_chain_input = [SUMMARY_STAGE_1_MAP_PROMPT.format(text=t) for t in chunks_text]
+#   map_llm_chain_results = together_service.generate(
+#     llm_chain_input,
+#     'mistralai/Mixtral-8x7B-Instruct-v0.1',
+#     max_tokens=1024,
+#     top_p=0.6,
+#     temperature=0.4,
+#     stop_tokens=['---']
+#   )
+#   stage_1_outputs = utils.parse_title_summary_results(map_llm_chain_results)
+
+#   print(f'Stage 1 done time {datetime.now()}')
+#   return {'stage_1_outputs': stage_1_outputs}
 
 
 
