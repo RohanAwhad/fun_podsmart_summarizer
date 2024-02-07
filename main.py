@@ -15,7 +15,7 @@ from src import utils
 from src.encoder_service import encode
 from src.summarizer import summarize_stage_1, summarize_stage_2
 
-VERSION = '1.4.2'
+VERSION = '1.4.3'
 
 # logfile = f'logs/main_v{VERSION}.log'
 # logger.add(logfile, colorize=True, enqueue=True)
@@ -66,7 +66,7 @@ def main(text: str) -> MainOut:
   segments = [x for sent in segments for x in sent]
 
   sentences = utils.create_sentences(segments, MIN_WORDS=20, MAX_WORDS=80)
-  chunks = utils.create_chunks(sentences, CHUNK_LENGTH=10, STRIDE=2)
+  chunks = utils.create_chunks(sentences, CHUNK_LENGTH=5, STRIDE=1)
   chunks_text = [chunk['text'] for chunk in chunks]
 
   # Run Stage 1 Summarizing
