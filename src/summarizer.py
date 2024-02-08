@@ -117,6 +117,8 @@ stage_1_llms = [
 def _new_parse_title_n_summary_results(ai_response: str):
   start_idx = ai_response.find('{')
   end_idx = ai_response.rfind('}') + 1
+  print('Original response: ', ai_response)
+  print('Subset:', ai_response[start_idx:end_idx])
   return json.loads(ai_response[start_idx:end_idx])
 
 def summarize_stage_1(chunks_text, handler=None, verbose=False):
@@ -210,15 +212,33 @@ def summarize_stage_2(stage_1_outputs, topics, summary_num_words = 250, handler=
   titles = [t.strip() for t in titles]
 
   # === My Implementation for stage 2 summaries ===
-  input_docs = [SUMMARY_STAGE_2_MAP_PROMPT.format(text=t) for t in topics_summary_concat]
-  summaries = together_service.generate(
-    input_docs,
-    'mistralai/Mixtral-8x7B-Instruct-v0.1',
+  stage_2_llm_params = LLMParams(
     max_tokens=1024,
+    temperature=0.3,
     top_p=0.6,
-    temperature=0,
-    stop_tokens=['---']
+    top_k=50,
+    stop=['---']
   )
+  stage_2_llms = [LLM(
+    url=openai_api_url,
+    api_key=openai_api_key,
+    model='gpt-3.5-turbo',
+    llm_params=stage_2_llm_params,
+    prompt_template=SUMMARY_STAGE_2_MAP_PROMPT,
+  ),]
+  
+  input_docs = [[{'text': t} for _ in range(len(stage_2_llms))] for t in topics_summary_concat]
+  summaries = fun_llm_service.generate(input_docs, stage_2_llms, max_retries=2, total_timeout=20)
+
+  # input_docs = [SUMMARY_STAGE_2_MAP_PROMPT.format(text=t) for t in topics_summary_concat]
+  # summaries = together_service.generate(
+  #   input_docs,
+  #   'mistralai/Mixtral-8x7B-Instruct-v0.1',
+  #   max_tokens=1024,
+  #   top_p=0.6,
+  #   temperature=0,
+  #   stop_tokens=['---']
+  # )
   stage_2_outputs = [{'title': t, 'summary': s.strip()} for t, s in zip(titles, summaries)]
 
   # === My Implementation for final summary ===
