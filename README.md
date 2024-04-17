@@ -17,7 +17,7 @@ To set up the project, follow these steps:
 1. Clone the repository:
 
    ```
-   git clone https://github.com/yourusername/fun_podsmart_summarizer.git
+   git clone https://github.com/rohanawhad/fun_podsmart_summarizer.git
    ```
 
 2. Install the required packages:
