@@ -74,4 +74,4 @@ Utilize the provided plotting functions in the `main.py` file to generate plots 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
